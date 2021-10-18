@@ -18,12 +18,6 @@ var (
 	// BuildDate date string of when build was performed filled in by -X compile flag
 	BuildDate string
 
-	// LatestCommit date string of when build was performed filled in by -X compile flag
-	LatestCommit string
-
-	// BuildNumber date string of when build was performed filled in by -X compile flag
-	BuildNumber string
-
 	// BuiltOnIP date string of when build was performed filled in by -X compile flag
 	BuiltOnIP string
 
@@ -32,6 +26,12 @@ var (
 
 	// RuntimeVer date string of when build was performed filled in by -X compile flag
 	RuntimeVer string
+
+	// LatestCommit date string of when build was performed filled in by -X compile flag
+	LatestCommit string
+
+	// BuildNumber date string of when build was performed filled in by -X compile flag
+	BuildNumber string
 
 	// OsSignal signal used to shutdown
 	OsSignal chan os.Signal

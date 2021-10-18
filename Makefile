@@ -17,12 +17,15 @@ endif
 
 export COMMIT_CNT := $(shell git rev-list HEAD | wc -l | sed 's/ //g' )
 export BUILD_NUMBER := ${BRANCH}-${COMMIT_CNT}
-export COMPILE_LDFLAGS="main.BuildDate=${DATE}" \
-                "main.BuiltOnIP=${BUILT_ON_IP}" \
-                "main.BuiltOnOs=${BUILT_ON_OS}" \
-				"main.RuntimeVer=${RUNTIME_VER}" \
-                "main.LatestCommit=${LATEST_COMMIT}" \
-                "main.BuildNumber=${BUILD_NUMBER}"  
+export COMPILE_LDFLAGS='-X main.BuildDate="${DATE}"' \
+                '-X main.BuiltOnIP="${BUILT_ON_IP}"' \
+                '-X main.BuiltOnOs="${BUILT_ON_OS}"' \
+				'-X main.RuntimeVer="${RUNTIME_VER}"' \
+                '-X main.LatestCommit="${LATEST_COMMIT}"' \
+                '-X main.BuildNumber="${BUILD_NUMBER}"' 
+
+build:
+	go build -o app -ldflags $(COMPILE_LDFLAGS)
 
 run:
 	@PORT=${APP_PORT} \
@@ -31,26 +34,23 @@ run:
 		DB_NAME=${POSTGRESQL_DB} \
 		DB_USER=${POSTGRESQL_USER} \
 		DB_PASS=${POSTGRES_PASSWORD} \
-		go run main.go $(COMPILE_LDFLAGS)
+		go run main.go -ldflags $(COMPILE_LDFLAGS)
+
+runOnContainer:
+	@docker-compose up
 
 lookDB:
 	@docker exec -it user-db psql -U ${POSTGRESQL_USER} ${POSTGRESQL_DB}
 
-build:
+buildContainer:
 	@docker-compose build --parallel
 
-runDB:
-	@docker-compose up -d
-
-stopDB:
+stop:
 	@docker-compose down
 
 restartDB:
 	docker-compose restart
 
-cleanDB:
+clean:
 	@docker-compose down --rmi local
 	sudo rm -rf ${POSTGRESQL_DATA}
-
-removeContainer:
-	@docker-compose down --rmi local

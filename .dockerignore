@@ -1,0 +1,9 @@
+# DB files
+db
+
+# .env
+.env
+.env.template
+
+# docker-compose file
+docker-compose.yml

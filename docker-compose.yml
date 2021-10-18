@@ -1,5 +1,29 @@
 version: "3"
 services:
+  backend:
+    build: .
+    depends_on:
+      - user-db
+    container_name: backend
+    restart: unless-stopped
+    tty: true
+    environment:
+      APP_PORT: ${APP_PORT:-8080}
+      DB_HOST: ${POSTGRESQL_HOST:-user-db}
+      DB_PORT: ${POSTGRESQL_PORT:-5432}
+      DB_USER: ${POSTGRESQL_USER:-dbuser}
+      DB_PASS: ${POSTGRES_PASSWORD:-dbuser123}
+      DB_NAME: ${POSTGRESQL_DB:-userDB}
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - backend
+    ports:
+      - "${APP_PORT:-8080}:${APP_PORT:-8080}"
+
   user-db:
     image: postgres:12.6
     container_name: user-db
