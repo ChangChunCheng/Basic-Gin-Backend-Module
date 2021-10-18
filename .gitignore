@@ -1,3 +1,12 @@
+# Environment file
+.env
+
+# log files
+logs/*
+
+# DB files
+db/pgdata
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

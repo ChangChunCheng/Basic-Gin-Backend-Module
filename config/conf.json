@@ -1,0 +1,21 @@
+{
+    "app": {
+    "name": "fintech",
+    "maintainer": "jacky850509@gmail.com",
+    "_mode": "develop, test, deploy",
+    "mode": "develop"
+  },
+  "logger": {
+    "path": "logs/"
+  },
+  "router": {
+    "urlPath": "api",
+    "v1": "v1"
+  },
+  "auth": {
+    "secret": "fintech-haubonbon",
+    "_passwordKeyLength": 32,
+    "passwordKey": "OscarGraceJackyYunHauBonBonononn",
+    "header": "Authorization"
+  }
+}

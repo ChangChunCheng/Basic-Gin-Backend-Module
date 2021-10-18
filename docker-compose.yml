@@ -1,0 +1,27 @@
+version: "3"
+services:
+  user-db:
+    image: postgres:12.6
+    container_name: user-db
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ${POSTGRESQL_ENTRYPOINT_D:-./db/docker-entrypoint-initdb.d}:/docker-entrypoint-initdb.d/
+      - ${POSTGRESQL_DATA:-./db/pgdata}:/var/lib/postgresql/data/pgdata
+    environment:
+      POSTGRES_USER: ${POSTGRESQL_USER:-dbuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dbuser123}
+      POSTGRES_DB: ${POSTGRESQL_DB:-userDB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - backend
+    ports:
+      - "${POSTGRESQL_PORT:-5432}:5432"
+
+networks:
+  backend:
