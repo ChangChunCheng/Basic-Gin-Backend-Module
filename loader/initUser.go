@@ -27,7 +27,7 @@ func initUser() {
 	}
 
 	createUserModel := &model.Users{}
-	createUser.ToModel(createUserModel, err)
+	err = createUser.ToModel(createUserModel)
 	if err != nil {
 		panic("InitUser user secret error")
 	}
@@ -44,8 +44,8 @@ func initUser() {
 		return
 	}
 
-	_, rows, err := dao.AddUsers(createUserModel)
-	if (err != nil) || (rows != 1) {
+	_, err = dao.AddUsers(createUserModel)
+	if err != nil {
 		panic("Init user error")
 	}
 }

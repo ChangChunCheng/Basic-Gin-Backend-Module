@@ -88,5 +88,7 @@ func BuildRouter() *gin.Engine {
 	// Allow Cross Origin
 	r.Use(CORSMiddleware())
 	r.Use(LoggerOut())
+	configAuthRouter("/auth", r)
+	configUserRouter("/user", r)
 	return r
 }

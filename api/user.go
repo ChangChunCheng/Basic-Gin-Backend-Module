@@ -1,11 +1,13 @@
 package api
 
 import (
+	"net/http"
 	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 
+	"basic-gin-backend-module/dao"
 	"basic-gin-backend-module/handler"
 	"basic-gin-backend-module/model"
 )
@@ -34,32 +36,32 @@ type CreateUser struct {
 	Name     string `json:"Name"`
 }
 
-func (createUser *CreateUser) ToModel(userModel *model.Users, err error) {
+func (createUser *CreateUser) ToModel(userModel *model.Users) error {
 	secret, err := handler.GetSecret(createUser.Password)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	userModel.Account = createUser.Account
 	userModel.Password = []byte(secret)
 	userModel.Name = createUser.Name
+	return nil
 }
 
 type UpdateUser struct {
 	UserID   string `json:"UserID"`
-	Account  string `json:"Account"`
 	Password string `json:"Password"`
 	Name     string `json:"Name"`
 }
 
-func (updateUser *UpdateUser) ToModel(userModel *model.Users, err error) {
+func (updateUser *UpdateUser) ToModel(userModel *model.Users) error {
 	secret, err := handler.GetSecret(updateUser.Password)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	userModel.UserID = uuid.FromStringOrNil(updateUser.UserID)
-	userModel.Account = updateUser.Account
 	userModel.Password = []byte(secret)
 	userModel.Name = updateUser.Name
+	return nil
 }
 
 type DisableUser struct {
@@ -86,18 +88,61 @@ func (deleteUser *DeleteUser) ToModel(userModel *model.Users) {
 	userModel.UserID = uuid.FromStringOrNil(deleteUser.UserID)
 }
 
-// Login - Login data to BindJSON()
-type Login struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
+func getMe(c *gin.Context) {
+	claims := c.MustGet("claims").(Claims)
+
+	userRes := &User{
+		UserID:  claims.UserID,
+		Account: claims.Account,
+		Name:    claims.Name,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": userRes,
+	})
 }
 
-// Claims - Token data to build JWT
-type Claims struct {
-	UserID   int32  `json:"userid"`
-	Account  string `json:"account"`
-	Name     string `json:"name"`
-	Ordered  bool   `json:"ordered"`
-	Identity string `json:"identity"`
-	jwt.StandardClaims
+func updateUser(c *gin.Context) {
+	var updateUser *UpdateUser
+	var err error
+	if err = c.BindJSON(&updateUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"msg": RequestBodyError,
+		})
+		c.Abort()
+		return
+	}
+
+	userModel := &model.Users{}
+	err = updateUser.ToModel(userModel)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": ProcessError,
+		})
+		c.Abort()
+		return
+	}
+
+	user, err := dao.AddUsers(userModel)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"msg": DBInsertError,
+		})
+		c.Abort()
+		return
+	}
+
+	userRes := &User{}
+	userRes.FromModel(user)
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": userRes,
+	})
+}
+
+func configUserRouter(group string, e *gin.Engine) {
+	g := e.Group(group)
+	g.Use(auth)
+	g.PUT("/update", updateUser)
+	g.GET("/me", getMe)
 }
