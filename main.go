@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/droundy/goopt"
+	"github.com/gin-gonic/gin"
 
 	"basic-gin-backend-module/api"
 	"basic-gin-backend-module/loader"
@@ -49,7 +49,8 @@ func GinServer() (err error) {
 		port = "8080"
 	}
 
-	router := api.BuildRouter()
+	router := gin.New()
+	api.BuildRouter(router)
 
 	// router.Run(viper.GetString("APP_HOST") + ":" + viper.GetString("APP_PORT"))
 	router.Run(fmt.Sprintf(":%s", port))
@@ -68,15 +69,18 @@ func main() {
 	OsSignal = make(chan os.Signal, 1)
 
 	// Define version information
-	goopt.Version = fmt.Sprintf(
-		`Application build information
-  Build date      : %s
-  Runtime version : %s
-  Built on OS     : %s
-  Build number    : %s
-  Git commit      : %s
-`, BuildDate, RuntimeVer, BuiltOnOs, BuildNumber, LatestCommit)
-	goopt.Parse(nil)
+	fmt.Printf(
+		`
+		Application build information
+		Build date      : %s
+		Build on IP     : %s
+		Built on OS     : %s
+		Runtime version : %s
+		Build number    : %s
+		Git commit      : %s
+		`,
+		BuildDate, BuiltOnIP, RuntimeVer, BuiltOnOs, BuildNumber, LatestCommit,
+	)
 
 	go GinServer()
 	LoopForever()

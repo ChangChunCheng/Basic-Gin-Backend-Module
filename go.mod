@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/droundy/goopt v0.0.0-20170604162106-0b8effe182da
 	github.com/gin-gonic/gin v1.7.4
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/satori/go.uuid v1.2.0

@@ -6,7 +6,7 @@ export PROJ_PATH=basic-gin-backend-module
 export DATE := $(shell date +%Y.%m.%d-%H%M)
 export LATEST_COMMIT := $(shell git log --pretty=format:'%h' -n 1)
 export BRANCH := $(shell git branch |grep -v "no branch"| grep \*|cut -d ' ' -f2)
-export BUILT_ON_IP := $(shell hostname -I | cut -d' ' -f1 )
+export BUILT_ON_IP := $(shell hostname | cut -d' ' -f1 )
 export BIN_DIR=./bin
 export RUNTIME_VER := $(shell go version)
 
@@ -17,14 +17,15 @@ endif
 
 export COMMIT_CNT := $(shell git rev-list HEAD | wc -l | sed 's/ //g' )
 export BUILD_NUMBER := ${BRANCH}-${COMMIT_CNT}
-export COMPILE_LDFLAGS='-X main.BuildDate="${DATE}"' \
-                '-X main.BuiltOnIP="${BUILT_ON_IP}"' \
-                '-X main.BuiltOnOs="${BUILT_ON_OS}"' \
-				'-X main.RuntimeVer="${RUNTIME_VER}"' \
-                '-X main.LatestCommit="${LATEST_COMMIT}"' \
-                '-X main.BuildNumber="${BUILD_NUMBER}"' 
+export COMPILE_LDFLAGS='-X "main.BuildDate=${DATE}" \
+                -X "main.BuiltOnIP=${BUILT_ON_IP}" \
+                -X "main.BuiltOnOs=${BUILT_ON_OS}" \
+				-X "main.RuntimeVer=${RUNTIME_VER}" \
+                -X "main.LatestCommit=${LATEST_COMMIT}" \
+                -X "main.BuildNumber=${BUILD_NUMBER}"' 
 
 build:
+	go mod tidy
 	go build -o app -ldflags $(COMPILE_LDFLAGS)
 
 run:

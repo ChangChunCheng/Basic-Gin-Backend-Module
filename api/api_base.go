@@ -81,16 +81,15 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 // BuildRouter - Build router with gin.Engine.group to build router tree
-func BuildRouter() *gin.Engine {
+func BuildRouter(r *gin.Engine) {
 	apiv1PathElements := []string{viper.GetString("router.urlPath"), viper.GetString("router.v1")}
 	apiv1Path := "/" + strings.Join(apiv1PathElements[:], "/")
 
-	r := gin.New()
+	//r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 	// Allow Cross Origin
 	r.Use(CORSMiddleware())
 	r.Use(LoggerOut())
 	configAuthRouter(apiv1Path+"/auth", r)
 	configUserRouter(apiv1Path+"/user", r)
-	return r
 }
