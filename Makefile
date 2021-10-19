@@ -25,33 +25,54 @@ export COMPILE_LDFLAGS='-X "main.BuildDate=${DATE}" \
                 -X "main.BuildNumber=${BUILD_NUMBER}"' 
 
 build:
+	@echo "Downloading go module..."
 	go mod tidy
+	@echo "Building go app..."
 	go build -o app -ldflags $(COMPILE_LDFLAGS)
 
 run:
+	@echo "Runing app..."
 	@PORT=${APP_PORT} \
-		DB_HOST=${POSTGRESQL_HOST} \
+		DB_HOST=${BUILT_ON_IP} \
 		DB_PORT=${POSTGRESQL_PORT} \
 		DB_NAME=${POSTGRESQL_DB} \
 		DB_USER=${POSTGRESQL_USER} \
 		DB_PASS=${POSTGRES_PASSWORD} \
-		go run main.go -ldflags $(COMPILE_LDFLAGS)
-
-runOnContainer:
-	@docker-compose up
+		./app
 
 lookDB:
+	@echo "Going to docker to watch DB"
 	@docker exec -it user-db psql -U ${POSTGRESQL_USER} ${POSTGRESQL_DB}
 
-buildContainer:
-	@docker-compose build --parallel
+buildDB:
+	@echo "Building docker DB..."
+	@docker-compose build user-db
 
-stop:
-	@docker-compose down
+runDB:
+	@echo "Running docker DB..."
+	@docker-compose run -d user-db
 
 restartDB:
-	docker-compose restart
+	@echo "Restarting docker DB..."
+	@docker-compose restart user-db
+
+buildContainer:
+	@echo "Building docker DB and app..."
+	@docker-compose build --parallel
+
+runOnContainer: buildContainer
+	@echo "Running docker containers..."
+	@docker-compose up
+
+stop:
+	@echo "Closing docker containers..."
+	@docker-compose down
+
+restart:
+	@echo "Restarting docker containers..."
+	@docker-compose restart
 
 clean:
+	@echo "Cleaning docker images on local and data..."
 	@docker-compose down --rmi local
 	sudo rm -rf ${POSTGRESQL_DATA}

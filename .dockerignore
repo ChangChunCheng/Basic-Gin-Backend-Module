@@ -2,7 +2,6 @@
 db
 
 # .env
-.env
 .env.template
 
 # docker-compose file
