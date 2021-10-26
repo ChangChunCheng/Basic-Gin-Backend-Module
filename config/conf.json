@@ -1,6 +1,6 @@
 {
-    "app": {
-    "name": "fintech",
+  "app": {
+    "name": "Basic-Gin-Backend-Module",
     "maintainer": "jacky850509@gmail.com",
     "_mode": "develop, test, deploy",
     "mode": "develop"
@@ -13,9 +13,9 @@
     "v1": "v1"
   },
   "auth": {
-    "secret": "fintech-haubonbon",
+    "secret": "Basic-Gin-Backend-Module",
     "_passwordKeyLength": 32,
-    "passwordKey": "OscarGraceJackyYunHauBonBonononn",
+    "passwordKey": "Basic-Gin-Backend-ModuleHauBonon",
     "header": "Authorization"
   }
 }
